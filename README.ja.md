@@ -8,6 +8,10 @@ Twitter/X の通知を Mozilla の Web Push 基盤を通じてリアルタイム
 
 [English README](README.md)
 
+## Android版
+
+Android 17向けの通知クライアントを [`android/`](android/README.md) に追加しています。ユーザー別タブ、通知履歴の保存、煽り表現のルールによる自動非表示、任意のX上での自動ブロックに対応します。初回・再登録とX上のブロックにはAPIを使います。ビルド・利用手順と未検証の範囲はAndroid版READMEを参照してください。
+
 ## 概要
 
 Angelic Angel はブラウザの Web Push クライアントをエミュレートし、Twitter/X のプッシュ通知を受信します。[Mozilla AutoPush](https://autopush.readthedocs.io/) に WebSocket で接続し、ECE (Encrypted Content-Encoding) で暗号化された通知を復号して、設定された Webhook エンドポイントに転送します。
