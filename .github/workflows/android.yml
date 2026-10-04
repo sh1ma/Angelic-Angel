@@ -18,6 +18,7 @@ jobs:
       - uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: '13114758'
+          packages: platform-tools
       - run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0'
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew && ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --console=plain
