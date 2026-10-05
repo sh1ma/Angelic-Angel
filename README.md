@@ -28,8 +28,9 @@ Twitter/X  ──push──▶  Mozilla AutoPush Server  ◀──WebSocket─�
 ### Important Notes
 
 - **Data source**: All notification data is received from Mozilla's Web Push server (`push.services.mozilla.com`). Angelic Angel does not access Twitter/X directly for notification data.
-- **Minimal API usage**: The Twitter/X API is only called during the initial push subscription registration (`register` command). No API calls are made while listening for notifications.
+- **Minimal API usage**: Angelic Angel does not poll Twitter/X for notifications. It calls Twitter/X only to register the push subscription: once with the `register` command, and again automatically if the AutoPush UAID is invalidated while `listen` is running (see [Reconnection](#reconnection)).
 - **No scraping**: This tool does not perform any web scraping. It uses the standard W3C Push API flow, the same mechanism browsers use to deliver push notifications.
+- **Unofficial endpoint**: Registration uses an endpoint of the Twitter/X web client (`x.com/i/api/1.1/notifications/settings/login.json`) with your browser session cookies, not the public developer API. This may conflict with the [X Terms of Service](https://x.com/tos), which restrict access to the Services through interfaces other than X's published ones. Use this tool at your own risk, including the risk of restrictions on your account.
 
 ## Requirements
 
@@ -41,6 +42,13 @@ Twitter/X  ──push──▶  Mozilla AutoPush Server  ◀──WebSocket─�
 1. Open [x.com](https://x.com) in your web browser and log in.
 2. Open Developer Tools (F12) and go to the **Application** (or **Storage**) tab.
 3. Under **Cookies** → `https://x.com`, find the values for `auth_token` and `ct0`.
+
+### Handling credentials
+
+The configuration file stores your session cookies (`auth_token`, `ct0`) and, after `register`, the Web Push private key and auth secret in plain text. Exposure of the session credentials could allow unauthorized access to your account.
+
+- Do not share or commit the configuration file. The default `angelic-angel.toml` is listed in `.gitignore`, but files saved under a different name via `-c` may not be.
+- Restrict the file's permissions to your user (e.g. `chmod 600 angelic-angel.toml` on Unix-like systems).
 
 ## Installation
 
@@ -100,7 +108,7 @@ angelic-angel unregister
 Angelic Angel implements a Firefox-compatible reconnection strategy:
 
 - Exponential backoff: 5s × 2^n, capped at 5 minutes
-- Automatic re-registration on UAID invalidation
+- Automatic re-registration on UAID invalidation (a new push subscription is registered with AutoPush, and its endpoint is re-registered with Twitter/X)
 - Server backoff (close code 4774): 30-minute delay
 - Infinite retries with counter reset on successful connection
 
